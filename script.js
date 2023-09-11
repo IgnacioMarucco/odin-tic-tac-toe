@@ -1,11 +1,10 @@
 "use strict";
 const Gameboard = (() => {
-  // const board = ["X", "X", "", "O", "O", "", "", "", ""]
+  // const board = ["X","O","X","O", ,"X",, "X", "O"]
   const board = [...Array(9)];
   const editBoard = (index, marker) => {
     board[index] = marker;
   }
-
   return {board, editBoard};
 })();
 
@@ -13,37 +12,48 @@ const Player = (name, marker) => {
   return {name, marker}
 }
 
-const Game = (() => {
+const GameController = (() => {
   let players = [];
   let currentPlayer;
-  // let gameOver = false;
+  let gameOver = false;
+
   const start = () => {
     ScreenController.renderBoard();
-
     players = [
       Player(document.querySelector("#player1-input").value, "X"),
       Player(document.querySelector("#player2-input").value, "O"),
     ];
-
     currentPlayer = players[0];
   }
 
   const handleClick = (e) => {
     const playerChoice = e.target.dataset.index;
     playTurn(playerChoice);
-
   }
 
   const playTurn = (playerChoice) => {
     Gameboard.editBoard(playerChoice, currentPlayer.marker);
-    ScreenController.renderBoard();
-
+    // ScreenController.renderBoard();
     if (checkForWinner()) {
       alert(`${currentPlayer.name} won!`);
-      // gameOver = true;
+      gameOver = true;
+    } else if (checkForDraw()) {
+      gameOver = true;
+      alert("It's a draw!")
     }
-
+    ScreenController.renderBoard();
     currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    console.log("game over inside GameController > playTurn?", gameOver)
+  }
+
+  const checkForDraw = () => {
+    let board = Gameboard.board;
+    for (let i = 0; i < board.length ; i++) {
+      if (!board[i]){
+        return false;
+      }
+    }
+    return true;
   }
 
   const checkForWinner = () => {
@@ -61,16 +71,14 @@ const Game = (() => {
     for (let i = 0; i < winningCombinations.length; i++) {
       let [a, b, c] = winningCombinations[i];
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        console.log('GANO ALGUIEN')
         return true;
       }
     }
-    console.log('NO GANO NADIE')
     return false;
   }
-  return {start, handleClick}
-})();
 
+  return {start, handleClick, gameOver, players}
+})();
 
 const ScreenController = (() => {
   const gameboardGrid = document.querySelector(".gameboard");
@@ -84,12 +92,11 @@ const ScreenController = (() => {
       cell.dataset.index = `${index}`;
       cell.textContent = board[index];
       gameboardGrid.appendChild(cell);
-
-      // Add Event Listener to each cell
-      cell.addEventListener("click", Game.handleClick);
-      // Remove event listener if cell is already played
-      if(cell.textContent) {
-        cell.removeEventListener("click", Game.handleClick);
+      console.log("game over inside ScreenController > renderBoard?", GameController.gameOver);
+      console.log("players", GameController.players)
+      // New event add
+      if (!cell.textContent && !GameController.gameOver) {
+        cell.addEventListener("click", GameController.handleClick);
       }
     }
   }
@@ -98,8 +105,10 @@ const ScreenController = (() => {
   return {renderBoard}
 })();
 
-
-const startButton = document.querySelector("#start-button");
-startButton.addEventListener("click", () => {
-  Game.start();
-})
+// On windows load
+document.addEventListener("DOMContentLoaded", function() {
+  const startButton = document.querySelector("#start-button");
+  startButton.addEventListener("click", () => {
+    GameController.start();
+  })
+});

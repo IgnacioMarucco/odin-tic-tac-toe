@@ -2,6 +2,7 @@
 
 const Gameboard = (() => {
   const board = [...Array(9)].fill('');
+
   const editBoard = (index, marker) => {
     board[index] = marker;
   }
@@ -35,13 +36,13 @@ const GameController = (() => {
   const playTurn = (playerChoice) => {
     Gameboard.editBoard(playerChoice, currentPlayer.marker);
     if (checkForWinner()) {
-      alert(`${currentPlayer.name} won!`);
       gameOver = true;
       ScreenController.renderBoard();
+      ScreenController.renderResult(true);
     } else if (checkForDraw()) {
       gameOver = true;
-      alert("It's a draw!")
       ScreenController.renderBoard();
+      ScreenController.renderResult(false);
     } else {
       ScreenController.renderBoard();
       currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
@@ -80,13 +81,14 @@ const GameController = (() => {
   }
 
   const getGameOver = () => gameOver;
-  const getPlayers = () => players;
+  const getCurrentPlayer = () => currentPlayer;
 
-  return {start, handleClick, getGameOver, getPlayers}
+  return {start, handleClick, getGameOver, getCurrentPlayer}
 })();
 
 const ScreenController = (() => {
   const gameboardGrid = document.querySelector(".gameboard");
+  const resultDisplay = document.querySelector("#result-display");
   const board = Gameboard.getBoard();
 
   const renderBoard = () => {
@@ -103,7 +105,15 @@ const ScreenController = (() => {
       }
     }
   }
-  return {renderBoard}
+
+  const renderResult = (result) => {
+    if (result) {
+      resultDisplay.textContent = `The winner is ${GameController.getCurrentPlayer().name}!`;
+    } else {
+      resultDisplay.textContent = `It's a Draw!`;
+    }
+  }
+  return {renderBoard, renderResult}
 })();
 
 // On windows load

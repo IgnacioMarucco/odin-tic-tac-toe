@@ -56,10 +56,14 @@ const GameController = (() => {
   const handleClick = (e) => {
     const playerChoice = e.target.dataset.index;
     playTurn(playerChoice);
+    if (getComputerPlayer() && !gameOver) {
+      computerTurn();
+    }
   }
 
-  const playTurn = (playerChoice) => {
-    Gameboard.editBoard(playerChoice, currentPlayer.marker);
+  const playTurn = (choice) => {
+    Gameboard.editBoard(choice, currentPlayer.marker);
+
     if (checkForWinner()) {
       gameOver = true;
       ScreenController.renderBoard();
@@ -72,17 +76,11 @@ const GameController = (() => {
       ScreenController.renderBoard();
       currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
     }
-
-    if (getComputerPlayer() && !gameOver) {
-      computerTurn();
-      currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
-    }
   }
 
   const computerTurn = () => {
     let computerChoice = getComputerChoice();
-    Gameboard.editBoard(computerChoice, currentPlayer.marker);
-    ScreenController.renderBoard();
+    playTurn(computerChoice, getComputerPlayer().marker);
   }
 
   const getComputerChoice = () => {

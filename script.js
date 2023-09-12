@@ -26,6 +26,7 @@ const GameController = (() => {
   let players = [];
   let currentPlayer;
   let gameOver = false;
+  let computerPlayer;
 
   const start = () => {
     players = [
@@ -33,7 +34,15 @@ const GameController = (() => {
       Player(document.querySelector("#player2-input").value, "O"),
     ];
     currentPlayer = players[0];
+
+    computerPlayer = getComputerPlayer();
     ScreenController.renderBoard();
+  }
+
+  const getComputerPlayer = () => {
+    if (players[1].name === "") {
+      return players[1];
+    }
   }
 
   const restart = () => {
@@ -63,6 +72,34 @@ const GameController = (() => {
       ScreenController.renderBoard();
       currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
     }
+
+    if (getComputerPlayer() && !gameOver) {
+      computerTurn();
+      currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    }
+  }
+
+  const computerTurn = () => {
+    let computerChoice = getComputerChoice();
+    Gameboard.editBoard(computerChoice, currentPlayer.marker);
+    ScreenController.renderBoard();
+  }
+
+  const getComputerChoice = () => {
+    let board = Gameboard.getBoard();
+
+    function getAvailablePositionsIndexes(board, searchItem) {
+      let i = board.indexOf(searchItem),
+          indexes = [];
+      while (i !== -1) {
+        indexes.push(i);
+        i = board.indexOf(searchItem, ++i);
+      }
+      return indexes;
+    }
+    let availablePositionIndexes = getAvailablePositionsIndexes(board, "");
+    let computerChoice = availablePositionIndexes[Math.floor(Math.random()*availablePositionIndexes.length)];
+    return computerChoice;
   }
 
   const checkForDraw = () => {

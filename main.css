@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 /* CSS RESET */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -44,17 +45,66 @@ table {
 }
 
 /* MAIN CSS */
+:root {
+  --light-color: #d5d6db;
+  --dark-color: #1a1b26;
+
+  --main-color: #33635c;
+  --secondary-color: #24283b;
+  --optional-color: #f5a272;
+
+  --default-font: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --main-font: 'Roboto';
+}
+h1,h2,h3,h6 {
+  font-weight: bold;
+	color: var(--light-color);
+}
+h1 {
+  font-size: 2rem;
+}
+
+body {
+	background-color: var(--secondary-color);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 .gameboard {
+	padding: 50px;
+	display: flex;
+	justify-content: center;
+
   display: grid;
-  grid-template-columns: 50px 50px 50px;
-  grid-template-rows: 50px 50px 50px;
+  grid-template-columns: 60px 60px 60px;
+  grid-template-rows: 60px 60px 60px;
 }
 
 .cell {
-  background-color: white;
-  border: 1px solid red;
+  background-color: var(--main-color);
+  border: 1px solid var(--optional-color);
 
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+button{
+  color: #fff;
+  background-color: var(--main-color);
+  padding: 10px 20px;
+  border: 2px solid var(--main-color);
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+input {
+  border-radius: 6px;
+  border: 1px solid var(--main-color);
+}
+
+#result-display {
+	color: var(--light-color);
 }

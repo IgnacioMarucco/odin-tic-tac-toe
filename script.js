@@ -1,11 +1,12 @@
 "use strict";
+
 const Gameboard = (() => {
-  // const board = ["X","O","X","O", ,"X",, "X", "O"]
-  const board = [...Array(9)];
+  const board = [...Array(9)].fill('');
   const editBoard = (index, marker) => {
     board[index] = marker;
   }
-  return {board, editBoard};
+  const getBoard = () => board;
+  return {getBoard, editBoard};
 })();
 
 const Player = (name, marker) => {
@@ -18,12 +19,12 @@ const GameController = (() => {
   let gameOver = false;
 
   const start = () => {
-    ScreenController.renderBoard();
     players = [
       Player(document.querySelector("#player1-input").value, "X"),
       Player(document.querySelector("#player2-input").value, "O"),
     ];
     currentPlayer = players[0];
+    ScreenController.renderBoard();
   }
 
   const handleClick = (e) => {
@@ -33,21 +34,22 @@ const GameController = (() => {
 
   const playTurn = (playerChoice) => {
     Gameboard.editBoard(playerChoice, currentPlayer.marker);
-    // ScreenController.renderBoard();
     if (checkForWinner()) {
       alert(`${currentPlayer.name} won!`);
       gameOver = true;
+      ScreenController.renderBoard();
     } else if (checkForDraw()) {
       gameOver = true;
       alert("It's a draw!")
+      ScreenController.renderBoard();
+    } else {
+      ScreenController.renderBoard();
+      currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
     }
-    ScreenController.renderBoard();
-    currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
-    console.log("game over inside GameController > playTurn?", gameOver)
   }
 
   const checkForDraw = () => {
-    let board = Gameboard.board;
+    let board = Gameboard.getBoard();
     for (let i = 0; i < board.length ; i++) {
       if (!board[i]){
         return false;
@@ -57,7 +59,7 @@ const GameController = (() => {
   }
 
   const checkForWinner = () => {
-    let board = Gameboard.board;
+    let board = Gameboard.getBoard();
     const winningCombinations = [
       [0,1,2],
       [3,4,5],
@@ -77,12 +79,15 @@ const GameController = (() => {
     return false;
   }
 
-  return {start, handleClick, gameOver, players}
+  const getGameOver = () => gameOver;
+  const getPlayers = () => players;
+
+  return {start, handleClick, getGameOver, getPlayers}
 })();
 
 const ScreenController = (() => {
   const gameboardGrid = document.querySelector(".gameboard");
-  const board = Gameboard.board;
+  const board = Gameboard.getBoard();
 
   const renderBoard = () => {
     gameboardGrid.innerHTML = ``;
@@ -92,16 +97,12 @@ const ScreenController = (() => {
       cell.dataset.index = `${index}`;
       cell.textContent = board[index];
       gameboardGrid.appendChild(cell);
-      console.log("game over inside ScreenController > renderBoard?", GameController.gameOver);
-      console.log("players", GameController.players)
-      // New event add
-      if (!cell.textContent && !GameController.gameOver) {
+      // Add events only if cell is empty and game is not over
+      if (!cell.textContent && !GameController.getGameOver()) {
         cell.addEventListener("click", GameController.handleClick);
       }
     }
   }
-
-  // renderBoard();
   return {renderBoard}
 })();
 

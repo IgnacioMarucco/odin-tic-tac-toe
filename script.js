@@ -6,8 +6,16 @@ const Gameboard = (() => {
   const editBoard = (index, marker) => {
     board[index] = marker;
   }
+
+  const resetBoard = () => {
+    for (let index = 0; index < board.length ; index++) {
+      board[index] = '';
+    }
+  }
+
   const getBoard = () => board;
-  return {getBoard, editBoard};
+
+  return {getBoard, editBoard, resetBoard};
 })();
 
 const Player = (name, marker) => {
@@ -28,6 +36,14 @@ const GameController = (() => {
     ScreenController.renderBoard();
   }
 
+  const restart = () => {
+    players = [];
+    gameOver = false;
+    Gameboard.resetBoard();
+    ScreenController.clearGrid();
+    ScreenController.renderResult();
+  }
+
   const handleClick = (e) => {
     const playerChoice = e.target.dataset.index;
     playTurn(playerChoice);
@@ -38,11 +54,11 @@ const GameController = (() => {
     if (checkForWinner()) {
       gameOver = true;
       ScreenController.renderBoard();
-      ScreenController.renderResult(true);
+      ScreenController.renderResult(1);
     } else if (checkForDraw()) {
       gameOver = true;
       ScreenController.renderBoard();
-      ScreenController.renderResult(false);
+      ScreenController.renderResult(2);
     } else {
       ScreenController.renderBoard();
       currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
@@ -83,7 +99,7 @@ const GameController = (() => {
   const getGameOver = () => gameOver;
   const getCurrentPlayer = () => currentPlayer;
 
-  return {start, handleClick, getGameOver, getCurrentPlayer}
+  return {start, restart, handleClick, getGameOver, getCurrentPlayer}
 })();
 
 const ScreenController = (() => {
@@ -91,8 +107,11 @@ const ScreenController = (() => {
   const resultDisplay = document.querySelector("#result-display");
   const board = Gameboard.getBoard();
 
-  const renderBoard = () => {
+  const clearGrid = () => {
     gameboardGrid.innerHTML = ``;
+  }
+  const renderBoard = () => {
+    clearGrid();
     for (let index = 0; index < board.length ; index++) {
       const cell = document.createElement("div");
       cell.classList.add("cell");
@@ -107,19 +126,28 @@ const ScreenController = (() => {
   }
 
   const renderResult = (result) => {
-    if (result) {
+    if (!result) {
+      resultDisplay.textContent = "";
+    } else if (result === 1) {
       resultDisplay.textContent = `The winner is ${GameController.getCurrentPlayer().name}!`;
     } else {
       resultDisplay.textContent = `It's a Draw!`;
     }
   }
-  return {renderBoard, renderResult}
+
+  return {renderBoard, renderResult, clearGrid}
 })();
 
 // On windows load
 document.addEventListener("DOMContentLoaded", function() {
   const startButton = document.querySelector("#start-button");
+  const restartButton = document.querySelector("#restart-button");
+
   startButton.addEventListener("click", () => {
     GameController.start();
+  });
+
+  restartButton.addEventListener("click", () => {
+    GameController.restart();
   })
 });

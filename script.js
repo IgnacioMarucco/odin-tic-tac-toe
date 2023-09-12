@@ -126,10 +126,15 @@ const ScreenController = (() => {
   }
 
   const renderResult = (result) => {
+    let playerName = GameController.getCurrentPlayer().name;
+    let playerMarker = GameController.getCurrentPlayer().marker;
     if (!result) {
       resultDisplay.textContent = "";
     } else if (result === 1) {
-      resultDisplay.textContent = `The winner is ${GameController.getCurrentPlayer().name}!`;
+      if (playerName === "") {
+        playerName = playerMarker;
+      }
+      resultDisplay.textContent = `The winner is ${playerName}!`;
     } else {
       resultDisplay.textContent = `It's a Draw!`;
     }

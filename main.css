@@ -94,6 +94,13 @@ header {
   align-items: center;
 }
 
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 button{
   color: #fff;
   background-color: var(--main-color);
@@ -104,10 +111,18 @@ button{
 }
 
 input {
+  margin: 10px;
   border-radius: 6px;
   border: 1px solid var(--main-color);
 }
 
+label {
+  color: var(--light-color);
+}
+
 #result-display {
 	color: var(--light-color);
+
+  padding: 10px;
+  text-align: center;
 }

@@ -72,6 +72,9 @@ body {
 	align-items: center;
 }
 
+header {
+	padding: 50px;
+}
 .gameboard {
 	padding: 50px;
 	display: flex;
